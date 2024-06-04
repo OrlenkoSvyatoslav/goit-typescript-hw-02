@@ -1,4 +1,12 @@
-const ImageCard = ({
+import React, { FC } from "react";
+import { Images } from "../../types";
+
+type ImageCardProps = {
+  item: Images;
+  onImgClick: (regular: string) => void;
+};
+
+const ImageCard: FC<ImageCardProps> = ({
   item: {
     alt_description,
     urls: { small, regular },

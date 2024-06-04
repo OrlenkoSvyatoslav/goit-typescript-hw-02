@@ -7,16 +7,21 @@ import ImageModal from "../ImageModal/ImageModal";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMassage/ErrorMassage";
+import { Images } from "../../types";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
+type Status = true | false;
 
 const App = () => {
-  const [imgs, setImgs] = useState([]);
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [imgUrl, setImgsUrl] = useState([]);
-  const [notFoundError, setNotFoundError] = useState(false);
+  const [imgs, setImgs] = useState<Images[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState<Status>(false);
+  const [error, setError] = useState<Status>(false);
+  const [modal, setModal] = useState<Status>(false);
+  const [imgUrl, setImgsUrl] = useState<string>("");
+  const [notFoundError, setNotFoundError] = useState<Status>(false);
 
   useEffect(() => {
     if (!query) {
@@ -30,11 +35,9 @@ const App = () => {
 
         const newImgs = await fetchImages(page, query);
 
-        if (newImgs.length === 0) {
-          setNotFoundError(true);
-        }
-
-        setImgs((prevImages) => [...prevImages, ...newImgs]);
+        setImgs((prevImages): Images[] => {
+          return [...prevImages, ...newImgs];
+        });
       } catch (error) {
         setError(true);
       } finally {
@@ -45,7 +48,7 @@ const App = () => {
     getImages();
   }, [query, page]);
 
-  const handleSubmit = (query) => {
+  const handleSubmit = (query: string): void => {
     setQuery(query);
     setPage(1);
     setImgs([]);
@@ -55,13 +58,13 @@ const App = () => {
     setPage(page + 1);
   };
 
-  const openModal = (url) => {
+  const openModal = (url: string): void => {
     setImgsUrl(url);
     toggle();
   };
 
   const toggle = () => {
-    setModal(!modal);
+    setModal(false);
   };
 
   return (
@@ -74,12 +77,7 @@ const App = () => {
       {notFoundError && <p className={css.notFound}>Not found, try again!</p>}
       {imgs.length > 0 && !loading && <LoadMoreBtn onClick={handleLoadMore} />}
       {modal && (
-        <ImageModal
-          image={imgUrl}
-          imgModal={modal}
-          item={imgs}
-          onModalClose={toggle}
-        />
+        <ImageModal image={imgUrl} imgModal={modal} onModalClose={toggle} />
       )}
     </div>
   );
